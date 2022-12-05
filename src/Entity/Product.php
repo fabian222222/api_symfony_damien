@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
@@ -17,25 +18,31 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_product', 'show_cart'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['show_product', 'show_cart'])]
     private ?int $quantity = null;
 
     #[ORM\Column]
+    #[Groups(['show_product', 'show_cart'])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['show_product', 'show_cart'])]
     private ?string $shortDescription = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['show_product', 'show_cart'])]
     private ?string $description = null;
 
-    #[ORM\OneToMany(mappedBy: 'products', targetEntity: Cart::class)]
-    private Collection $carts;
-
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'product')]
+    #[Groups(['show_product'])]
     private Collection $categories;
+
+    #[ORM\ManyToMany(targetEntity: Cart::class, inversedBy: 'products')]
+    private Collection $carts;
 
     public function __construct()
     {
@@ -109,36 +116,6 @@ class Product
     }
 
     /**
-     * @return Collection<int, Cart>
-     */
-    public function getCarts(): Collection
-    {
-        return $this->carts;
-    }
-
-    public function addCart(Cart $cart): self
-    {
-        if (!$this->carts->contains($cart)) {
-            $this->carts->add($cart);
-            $cart->setProducts($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCart(Cart $cart): self
-    {
-        if ($this->carts->removeElement($cart)) {
-            // set the owning side to null (unless already changed)
-            if ($cart->getProducts() === $this) {
-                $cart->setProducts(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Category>
      */
     public function getCategories(): Collection
@@ -161,6 +138,30 @@ class Product
         if ($this->categories->removeElement($category)) {
             $category->removeProduct($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Cart>
+     */
+    public function getCarts(): Collection
+    {
+        return $this->carts;
+    }
+
+    public function addCart(Cart $cart): self
+    {
+        if (!$this->carts->contains($cart)) {
+            $this->carts->add($cart);
+        }
+
+        return $this;
+    }
+
+    public function removeCart(Cart $cart): self
+    {
+        $this->carts->removeElement($cart);
 
         return $this;
     }

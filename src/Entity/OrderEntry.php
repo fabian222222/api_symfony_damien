@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use App\Repository\OrderEntryRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -15,21 +16,27 @@ class OrderEntry
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_client_order_detail'])]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups(['show_client_order_detail'])]
     private ?int $quantity = null;
 
     #[ORM\Column]
+    #[Groups(['show_client_order_detail'])]
     private ?float $price = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['show_client_order_detail'])]
     private ?string $short_description = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['show_client_order_detail'])]
     private ?string $description = null;
 
     #[ORM\Column]
+    #[Groups(['show_client_order_detail'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'orderEntries')]

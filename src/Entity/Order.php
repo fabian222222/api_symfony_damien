@@ -6,6 +6,7 @@ use App\Repository\OrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
@@ -17,25 +18,31 @@ class Order
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Groups(['show_client_order', 'show_client_order_detail'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column]
+    #[Groups(['show_client_order', 'show_client_order_detail'])]
     private ?float $total = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['show_client_order', 'show_client_order_detail'])]
     private ?string $code = null;
 
     #[ORM\Column]
+    #[Groups(['show_client_order', 'show_client_order_detail'])]
     private ?int $payementMethod = null;
-
-    #[ORM\ManyToOne(inversedBy: 'orders')]
-    private ?Address $addressUsed = null;
 
     #[ORM\ManyToOne(inversedBy: 'orders')]
     private ?Client $client = null;
 
     #[ORM\OneToMany(mappedBy: 'command', targetEntity: OrderEntry::class)]
+    #[Groups(['show_client_order_detail'])]
     private Collection $orderEntries;
+
+    #[ORM\Column(length: 255)]
+    #[Groups(['show_client_order'])]
+    private ?string $addressUsed = null;
 
     public function __construct()
     {
@@ -95,18 +102,6 @@ class Order
         return $this;
     }
 
-    public function getAddressUsed(): ?Address
-    {
-        return $this->addressUsed;
-    }
-
-    public function setAddressUsed(?Address $addressUsed): self
-    {
-        $this->addressUsed = $addressUsed;
-
-        return $this;
-    }
-
     public function getClient(): ?Client
     {
         return $this->client;
@@ -145,6 +140,18 @@ class Order
                 $orderEntry->setCommand(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAddressUsed(): ?string
+    {
+        return $this->addressUsed;
+    }
+
+    public function setAddressUsed(string $addressUsed): self
+    {
+        $this->addressUsed = $addressUsed;
 
         return $this;
     }

@@ -18,23 +18,20 @@ class Address
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['show_address'])]
+    #[Groups(['show_address, show_client_order'])]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['show_address'])]
+    #[Groups(['show_address, show_client_order'])]
     private ?string $postalCode = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['show_address'])]
+    #[Groups(['show_address, show_client_order'])]
     private ?string $city = null;
 
     #[ORM\ManyToOne(inversedBy: 'addresses')]
     #[Groups(['show_address'])]
     private ?Client $client = null;
-
-    #[ORM\OneToMany(mappedBy: 'addressUsed', targetEntity: Order::class)]
-    private Collection $orders;
 
     public function __construct()
     {
@@ -95,33 +92,4 @@ class Address
         return $this;
     }
 
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getOrders(): Collection
-    {
-        return $this->orders;
-    }
-
-    public function addOrder(Order $order): self
-    {
-        if (!$this->orders->contains($order)) {
-            $this->orders->add($order);
-            $order->setAddressUsed($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrder(Order $order): self
-    {
-        if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
-            if ($order->getAddressUsed() === $this) {
-                $order->setAddressUsed(null);
-            }
-        }
-
-        return $this;
-    }
 }
