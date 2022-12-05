@@ -36,7 +36,7 @@ class Order
     #[ORM\ManyToOne(inversedBy: 'orders')]
     private ?Client $client = null;
 
-    #[ORM\OneToMany(mappedBy: 'command', targetEntity: OrderEntry::class)]
+    #[ORM\OneToMany(mappedBy: 'command', targetEntity: OrderEntry::class, cascade: ['persist'])]
     #[Groups(['show_client_order_detail'])]
     private Collection $orderEntries;
 

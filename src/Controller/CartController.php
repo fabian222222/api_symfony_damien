@@ -111,6 +111,13 @@ class CartController extends AbstractController
         SerializerInterface $serializer
     ): Response
     {   
+
+        if (count($cart->getproducts()) === 0) {
+            return $this->json([
+                'ErrorMessage' => 'The cart is empty'
+            ]);
+        }
+
         $order = new Order();
         $order->setClient($cart->getClient());
         $order->setCreatedAt(new DateTimeImmutable());
@@ -129,7 +136,7 @@ class CartController extends AbstractController
 
             $orderEntry = new OrderEntry();
             $orderEntry->setName($product->getName());
-            $orderEntry->setName(1);
+            $orderEntry->setQuantity(1);
             $orderEntry->setPrice($product->getPrice());
             $orderEntry->setShortDescription($product->getShortDescription());
             $orderEntry->setDescription($product->getDescription());

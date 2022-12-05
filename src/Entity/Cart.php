@@ -27,7 +27,7 @@ class Cart
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Client $client = null;
 
-    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'carts')]
+    #[ORM\ManyToMany(targetEntity: Product::class, mappedBy: 'carts', cascade: ['persist'])]
     #[Groups(['show_cart'])]
     private Collection $products;
 
