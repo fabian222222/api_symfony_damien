@@ -6,13 +6,29 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 use App\Entity\Client;
 use App\Repository\ClientRepository;
+use App\Repository\CartRepository;
 use App\Form\ClientType;
 
 class ClientController extends AbstractController
 {
+
+    #[Route('/api/clients/{client_id}/carts', name: 'get_client_cart', methods: ['GET'])]
+    public function get_client_cart(
+        CartRepository $cartRepo,
+        int $client_id,
+        SerializerInterface $serializer
+    ): Response
+    {   
+        $clientCart = $cartRepo->findOneByClient($client_id);
+
+        $json = json_decode($serializer->serialize($clientCart, 'json', ['groups' => 'show_cart']));
+        return $this->json($json);
+    }
+
     #[Route('/api/client', name: 'get_clients', methods: ['GET'])]
     public function get_clients(
         ClientRepository $clientRepo
